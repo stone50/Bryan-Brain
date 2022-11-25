@@ -21,6 +21,12 @@
     <ClInclude Include="Utils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="platform_folders.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="virgo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Brain.cpp">
@@ -30,6 +36,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Utils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="platform_folders.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

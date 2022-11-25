@@ -5,6 +5,12 @@
 
 #pragma region InputNode
 
+Brain::InputNode::InputNode() :
+	value(0),
+	bias(0),
+	weights(std::vector<float>())
+{}
+
 Brain::InputNode::InputNode(
 	const float _value,
 	const float _bias,
@@ -13,7 +19,34 @@ Brain::InputNode::InputNode(
 	value(_value),
 	bias(_bias),
 	weights(_weights)
-{};
+{}
+
+std::istream& Brain::InputNode::read(std::istream& is) {
+	is >> value;
+	is >> bias;
+
+	size_t weightCount;
+	is >> weightCount;
+
+	weights = std::vector<float>(weightCount);
+	for (size_t i = 0; i < weightCount; i++) {
+		is >> weights[i];
+	}
+
+	return is;
+}
+
+std::ostream& Brain::InputNode::write(std::ostream& os) {
+	os << value << ' ';
+	os << bias << ' ';
+
+	os << weights.size() << ' ';
+	for (size_t i = 0; i < weights.size(); i++) {
+		os << weights[i] << ' ';
+	}
+
+	return os;
+}
 
 void Brain::InputNode::randomize() {
 	value = Utils::random();
@@ -27,19 +60,69 @@ void Brain::InputNode::randomize() {
 
 #pragma region MiddleNode
 
+Brain::MiddleNode::MiddleNode() :
+	value(0),
+	bias(0),
+	incomingValue(0),
+	middleWeights(std::vector<float>()),
+	outputWeights(std::vector<float>())
+{}
+
 Brain::MiddleNode::MiddleNode(
 	const float _value,
 	const float _bias,
 	const float _incomingValue,
 	const std::vector<float> _middleWeights,
 	const std::vector<float> _outputWeights
-) :
+) : 
 	value(_value),
 	bias(_bias),
 	incomingValue(_incomingValue),
 	middleWeights(_middleWeights),
 	outputWeights(_outputWeights)
-{};
+{}
+
+std::istream& Brain::MiddleNode::read(std::istream& is) {
+	is >> value;
+	is >> bias;
+	is >> incomingValue;
+
+	size_t middleWeightCount;
+	is >> middleWeightCount;
+
+	middleWeights = std::vector<float>(middleWeightCount);
+	for (size_t i = 0; i < middleWeightCount; i++) {
+		is >> middleWeights[i];
+	}
+
+	size_t outputWeightCount;
+	is >> outputWeightCount;
+
+	outputWeights = std::vector<float>(outputWeightCount);
+	for (size_t i = 0; i < outputWeightCount; i++) {
+		is >> outputWeights[i];
+	}
+
+	return is;
+}
+
+std::ostream& Brain::MiddleNode::write(std::ostream& os) {
+	os << value << ' ';
+	os << bias << ' ';
+	os << incomingValue << ' ';
+
+	os << middleWeights.size() << ' ';
+	for (size_t i = 0; i < middleWeights.size(); i++) {
+		os << middleWeights[i] << ' ';
+	}
+
+	os << outputWeights.size() << ' ';
+	for (size_t i = 0; i < outputWeights.size(); i++) {
+		os << outputWeights[i] << ' ';
+	}
+
+	return os;
+}
 
 void Brain::MiddleNode::randomize() {
 	value = Utils::random();
@@ -57,13 +140,32 @@ void Brain::MiddleNode::randomize() {
 
 #pragma region OutputNode
 
+Brain::OutputNode::OutputNode() :
+	value(0),
+	incomingValue(0)
+{}
+
 Brain::OutputNode::OutputNode(
 	const float _value,
 	const float _incomingValue
 ) :
 	value(_value),
 	incomingValue(_incomingValue)
-{};
+{}
+
+std::istream& Brain::OutputNode::read(std::istream& is) {
+	is >> value;
+	is >> incomingValue;
+
+	return is;
+}
+
+std::ostream& Brain::OutputNode::write(std::ostream& os) {
+	os << value << ' ';
+	os << incomingValue << ' ';
+
+	return os;
+}
 
 void Brain::OutputNode::randomize() {
 	value = Utils::random();
@@ -114,6 +216,11 @@ void Brain::calcOutputValues() {
 	}
 }
 
+Brain::Brain() :
+	inputNodes(std::vector<InputNode>()),
+	middleNodes(std::vector<MiddleNode>()),
+	outputNodes(std::vector<OutputNode>()){}
+
 Brain::Brain(const size_t inputs, const size_t middles, const size_t outputs) {
 	inputNodes = std::vector<InputNode>(inputs, InputNode(
 		0,								// value
@@ -133,6 +240,52 @@ Brain::Brain(const size_t inputs, const size_t middles, const size_t outputs) {
 	));
 }
 
+std::istream& Brain::read(std::istream& is) {
+	size_t inputNodeCount;
+	is >> inputNodeCount;
+
+	inputNodes = std::vector<InputNode>(inputNodeCount);
+	for (size_t i = 0; i < inputNodeCount; i++) {
+		inputNodes[i].read(is);
+	}
+
+	size_t middleNodeCount;
+	is >> middleNodeCount;
+
+	middleNodes = std::vector<MiddleNode>(middleNodeCount);
+	for (size_t i = 0; i < middleNodeCount; i++) {
+		middleNodes[i].read(is);
+	}
+
+	size_t outputNodeCount;
+	is >> outputNodeCount;
+
+	outputNodes = std::vector<OutputNode>(outputNodeCount);
+	for (size_t i = 0; i < outputNodeCount; i++) {
+		outputNodes[i].read(is);
+	}
+
+	return is;
+}
+
+std::ostream& Brain::write(std::ostream& os) {
+	os << inputNodes.size() << ' ';
+	for (size_t i = 0; i < inputNodes.size(); i++) {
+		inputNodes[i].write(os);
+	}
+
+	os << middleNodes.size() << ' ';
+	for (size_t i = 0; i < middleNodes.size(); i++) {
+		middleNodes[i].write(os);
+	}
+
+	os << outputNodes.size() << ' ';
+	for (size_t i = 0; i < outputNodes.size(); i++) {
+		outputNodes[i].write(os);
+	}
+	return os;
+}
+
 void Brain::randomize() {
 	for (size_t i = 0; i < inputNodes.size(); i++) {
 		inputNodes[i].randomize();
@@ -145,15 +298,15 @@ void Brain::randomize() {
 	}
 }
 
-void Brain::SetInput(const size_t index, const float value) {
+void Brain::setInput(const size_t index, const float value) {
 	inputNodes[index].value = value;
 }
 
-float Brain::GetOutput(const size_t index) {
+float Brain::getOutput(const size_t index) {
 	return outputNodes[index].value;
 }
 
-void Brain::Think() {
+void Brain::think() {
 	sendInputsToMiddles();
 	sendMiddlesToMiddles();
 	calcMiddlesValues();
@@ -161,22 +314,46 @@ void Brain::Think() {
 	calcOutputValues();
 }
 
-// TODO
-Brain Brain::load(const std::filesystem::path& filepath) {
-	return Brain(0, 0, 0);
+void Brain::reset() {
+	for (size_t i = 0; i < inputNodes.size(); i++) {
+		inputNodes[i].value = 0;
+	}
+
+	for (size_t i = 0; i < middleNodes.size(); i++) {
+		middleNodes[i].value = 0;
+		middleNodes[i].incomingValue = 0;
+	}
+
+	for (size_t i = 0; i < inputNodes.size(); i++) {
+		outputNodes[i].value = 0;
+		outputNodes[i].incomingValue = 0;
+	}
 }
 
-// TODO
-Brain Brain::loadState(const std::filesystem::path& filepath) {
-	return Brain(0, 0, 0);
+bool Brain::load(const std::filesystem::path& filepath, Brain& brain) {
+	std::ifstream filestream(filepath, std::ifstream::binary);
+
+	if (filestream.is_open()) {
+		brain.read(filestream);
+
+		filestream.close();
+
+		return true;
+	}
+	
+	return false;
 }
 
-// TODO
-void Brain::save(const std::filesystem::path& filepath) {
+bool Brain::save(const std::filesystem::path& filepath) {
+	std::ofstream filestream(filepath, std::ofstream::binary);
 
-}
+	if (filestream.is_open()) {
+		write(filestream);
 
-// TODO
-void Brain::saveState(const std::filesystem::path& filepath) {
+		filestream.close();
 
+		return true;
+	}
+
+	return false;
 }
