@@ -1,29 +1,14 @@
-#include <cstdlib>
-#include <ctime>
+#include <cstdlib>  // srand()
+#include <ctime>    // time()
 
 #include <iostream>
+#include <chrono>
 
 #define VIRGO_IMPLEMENTATION
 #include "virgo.h"
-#include "platform_folders.h"
-#include "Utils.h"
-#include "Brain.h"
+#include "Bryan.h"
 
-const char PROJECT_NAME[] = "Bryan Brain";
-
-int main() {
-	srand((unsigned int)time(0));
-
-	std::filesystem::path dataPath = sago::getDataHome();
-	dataPath /= PROJECT_NAME;
-	std::cout << dataPath << '\n';
-    std::cout << dataPath / "Test Brain.brain" << '\n';
-
-    Brain testBrain = Brain(5, 5, 5);
-    testBrain.randomize();
-    testBrain.save(dataPath / "Test Brain.brain");
-    Brain::load(dataPath / "Test Brain.brain", testBrain);
-
+void testVirgo() {
     virgo::virgo_init();
 
     std::vector<uint16_t> legal_moves = {};
@@ -38,6 +23,24 @@ int main() {
     }
 
     std::cout << "\ntotal moves: " << legal_moves.size() << std::endl;
+}
 
+void testBryan() {
+    //srand((unsigned int)time(0));
+
+    auto a = std::chrono::high_resolution_clock::now();
+    
+    Bryan::save();
+
+    auto b = std::chrono::high_resolution_clock::now();
+    std::cout << "took " << duration_cast<std::chrono::nanoseconds>(b - a).count() << " nanoseconds" << '\n';
+    std::cout << "took " << duration_cast<std::chrono::microseconds>(b - a).count() << " microseconds" << '\n';
+    std::cout << "took " << duration_cast<std::chrono::milliseconds>(b - a).count() << " milliseconds" << '\n';
+    std::cout << "took " << duration_cast<std::chrono::seconds>(b - a).count() << " seconds" << '\n';
+}
+
+int main() {
+    testBryan();
+    
 	return 0;
 }

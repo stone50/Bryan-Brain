@@ -27,15 +27,15 @@
     <ClInclude Include="virgo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Bryan.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Brain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="platform_folders.cpp">
