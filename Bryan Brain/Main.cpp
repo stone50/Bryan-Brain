@@ -1,13 +1,11 @@
-#include <cstdlib>  // srand()
 #include <ctime>    // time()
 
 #include <iostream>
 #include <chrono>
 
-#define VIRGO_IMPLEMENTATION
-#include "virgo.h"
 #include "Bryan.h"
 
+/*
 void testVirgo() {
     virgo::virgo_init();
 
@@ -24,13 +22,16 @@ void testVirgo() {
 
     std::cout << "\ntotal moves: " << legal_moves.size() << std::endl;
 }
+*/
 
 void testBryan() {
     //srand((unsigned int)time(0));
 
+    Bryan::Bryan bryan;
+
     auto a = std::chrono::high_resolution_clock::now();
     
-    Bryan::save();
+    bryan.analyze();
 
     auto b = std::chrono::high_resolution_clock::now();
     std::cout << "took " << duration_cast<std::chrono::nanoseconds>(b - a).count() << " nanoseconds" << '\n';

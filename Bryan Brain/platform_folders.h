@@ -1,3 +1,5 @@
+#pragma once
+
 /*
 Its is under the MIT license, to encourage reuse by cut-and-paste.
 

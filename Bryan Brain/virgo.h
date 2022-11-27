@@ -1,3 +1,5 @@
+#pragma once
+
 /*
 --- MIT License -------------------------------------------------------------
 Copyright (c) 2021 Gianmarco Picarella
@@ -22,11 +24,6 @@ SOFTWARE.
 -----------------------------------------------------------------------------
 */
 
-/////////////////////////////////////////////////////////////////////// VIRGO HEADER ///////////////////////////////////////////////////////////////////////
-#ifndef VIRGO_H
-#define VIRGO_H
-
-#include <cstdint>
 #include <vector>
 #include <regex>
 #include <iostream>
@@ -37,12 +34,12 @@ SOFTWARE.
 #define MOVE_TO(move) (((move) >> 6) & 0x3f)
 #define MOVE_TYPE(move) (((move) >> 12) & 0xf)
 
-namespace {
-    uint64_t KINDERGARTEN[8][256];
-    uint64_t KINDERGARTEN_ROTATED[8][256];
-    uint64_t SQUARE_MASK[65];
-    uint64_t FROM_TO_MASK[64][64];
-    uint64_t LINE_MASK[64][64];
+namespace virgo {
+    inline uint64_t KINDERGARTEN[8][256];
+    inline uint64_t KINDERGARTEN_ROTATED[8][256];
+    inline uint64_t SQUARE_MASK[65];
+    inline uint64_t FROM_TO_MASK[64][64];
+    inline uint64_t LINE_MASK[64][64];
 
     const uint64_t DEBRUIJN_MAGIC = 0x03f79d71b4cb0a89ull;
     const uint8_t DEBRUIJN_INDICES[64] = {
@@ -192,10 +189,6 @@ namespace {
             14, 15, 15, 15, 12, 15, 15, 13
     };
 
-}
-
-namespace virgo {
-
     typedef enum Player {
         BLACK = 0,
         WHITE = 1
@@ -275,7 +268,7 @@ namespace virgo {
             return this->king_position[P];
         }
 
-        // Gieven a player it returns his occupancy bitboard
+        // Given a player it returns his occupancy bitboard
         template <Player P> uint64_t occupancy() const {
             return this->pieces[P][0] | this->pieces[P][1] | this->pieces[P][2] |
                    this->pieces[P][3] | this->pieces[P][4] | this->pieces[P][5];
@@ -299,6 +292,16 @@ namespace virgo {
         // It returns true if player P can castle queen side otherwise false
         template <Player P> inline bool can_castle_queen_side() {
             return this->castling_perm & (P == WHITE ? 0x04 : 0x01);
+        }
+
+        // It returns the current enpassant square (from 0 to 63, 64 if it isn't set)
+        inline unsigned int get_enpassant() {
+            return enpassant;
+        }
+
+        // It returns the fifty move rule counter
+        inline uint8_t get_fifty_mv_counter() {
+            return fifty_mv_counter;
         }
 
     private:
@@ -361,14 +364,7 @@ namespace virgo {
 
     // It initializes Virgo's Kindergarten lookup tables
     void virgo_init();
-}
-#endif
 
-#ifdef VIRGO_IMPLEMENTATION
-#undef VIRGO_IMPLEMENTATION
-
-namespace {
-    using namespace virgo;
 /////////////////////////////////////////////////////////////////////// BIT MANIPULATION HELPERS ///////////////////////////////////////////////////////////////////////
     namespace bit {
         // It returns the most significant 1-bit index exploiting the de bruijn trick
@@ -599,76 +595,6 @@ namespace {
             return danger;
         }
     }
-}
-
-namespace virgo {
-
-    // Default constructor which initializes to the initial chess configuration
-    Chessboard::Chessboard() {
-        // Initial chessboard setup
-        this->castling_perm = 0x00;
-        this->fifty_mv_counter = 0;
-        this->next = WHITE;
-        this->enpassant = INVALID;
-        this->king_position[0] = e8;
-        this->king_position[1] = e1;
-
-        // Set chess starting position
-        this->all = 0xffff00000000ffff;
-
-        // Set black pieces
-        this->pieces[0][PAWN] = 0x00ff000000000000; // Pawns
-        this->pieces[0][ROOK] = 0x8100000000000000; // Rooks
-        this->pieces[0][KNIGHT] = 0x4200000000000000; // Knights
-        this->pieces[0][BISHOP] = 0x2400000000000000; // Bishops
-        this->pieces[0][KING] = 0x0800000000000000; // King
-        this->pieces[0][QUEEN] = 0x1000000000000000; // Queen
-
-        // Set white pieces
-        this->pieces[1][PAWN] = 0x000000000000ff00; // Pawns
-        this->pieces[1][ROOK] = 0x0000000000000081; // Rooks
-        this->pieces[1][KNIGHT] = 0x0000000000000042; // Knights
-        this->pieces[1][BISHOP] = 0x0000000000000024; // Bishops
-        this->pieces[1][KING] = 0x0000000000000008; // King
-        this->pieces[1][QUEEN] = 0x0000000000000010; // Queen
-
-        // Fill with empty values
-        for(int s = a1; s <= h8; s++) {
-            this->squares[s] = std::make_pair(EMPTY, BLACK);
-        }
-
-        // Set every pair which has a piece on the corresponding square index
-        for(int i = PAWN; i <= QUEEN; i++) {
-            uint64_t board = this->pieces[BLACK][i];
-            while(board) {
-                this->squares[bit::pop_lsb_index(board)] = std::make_pair(static_cast<Piece>(i), BLACK);
-                board &= (board-1);
-            }
-            board = this->pieces[WHITE][i];
-            while(board) {
-                this->squares[bit::pop_lsb_index(board)] = std::make_pair(static_cast<Piece>(i), WHITE);
-                board &= (board-1);
-            }
-        }
-    }
-
-    // Copy constructor
-    Chessboard::Chessboard(Chessboard const &c) {
-        this->all = c.all;
-        this->castling_perm = c.castling_perm;
-        this->fifty_mv_counter = c.fifty_mv_counter;
-        this->next = c.next;
-        this->enpassant = c.enpassant;
-
-        memcpy(this->pieces, c.pieces, 12*sizeof(uint64_t));
-
-        for(int s = a1; s <= h8; s++) {
-            this->squares[s] = c.squares[s];
-        }
-
-        this->king_position[0] = c.king_position[0];
-        this->king_position[1] = c.king_position[1];
-    }
 
     // Chessboard console format
     inline std::ostream & operator << (std::ostream & output, const Chessboard & board){
@@ -697,7 +623,7 @@ namespace virgo {
     }
 
     // Given a FEN string it returns the corresponding Chessboard object
-    Chessboard position_from_fen(std::string fen){
+    inline Chessboard position_from_fen(std::string fen){
         const static std::map<char, Piece> indexes = {
                 std::pair<char, Piece>('p', PAWN), std::pair<char, Piece>('r', ROOK),
                 std::pair<char, Piece>('n', KNIGHT), std::pair<char, Piece>('b', BISHOP),
@@ -705,7 +631,7 @@ namespace virgo {
         };
 
         // remove trailing spaces
-        ::string::trim(fen);
+        string::trim(fen);
 
         // check general format
         std::regex expr ("^([pnbrqkPNBRQK1-8]{1,8}\\/?){8}\\s(w|b)\\s(K?Q?k?q?|\\-)\\s([a-h][1-9]|\\-)\\s(0|[1-9][0-9]?)\\s(0|[1-9][0-9]?)$");
@@ -1427,7 +1353,7 @@ namespace virgo {
     }
 
     // It moves a piece from the "from" square to the "to" square
-    void Chessboard::move_piece(unsigned int from, unsigned int to) {
+    inline void Chessboard::move_piece(unsigned int from, unsigned int to) {
         auto & f = this->squares[from];
         auto & t = this->squares[to];
 
@@ -1447,7 +1373,7 @@ namespace virgo {
     }
 
     // It wipes a piece from a given square
-    void Chessboard::clear_piece(unsigned int square) {
+    inline void Chessboard::clear_piece(unsigned int square) {
         auto & t = this->squares[square];
         this->pieces[t.second][t.first] &= ~(1ull << square);
         this->all &= ~(1ull << square);
@@ -1455,7 +1381,7 @@ namespace virgo {
     }
 
     // It adds a new piece on to the given square
-    void Chessboard::add_piece(Player player, Piece piece, unsigned int square) {
+    inline void Chessboard::add_piece(Player player, Piece piece, unsigned int square) {
         auto & t = this->squares[square];
         t.first = piece;
         t.second = player;
@@ -1464,7 +1390,7 @@ namespace virgo {
     }
 
     // It initializes Virgo's lookup tables
-    void virgo_init() {
+    inline void virgo_init() {
 
         // Kindergarten bitboards init
         std::vector<uint8_t> first_rank_permutations;
@@ -1571,4 +1497,3 @@ namespace virgo {
         }
     }
 }
-#endif //VIRGO_IMPLEMENTATION

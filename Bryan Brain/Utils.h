@@ -2,6 +2,8 @@
 
 #include <cstdlib>
 
+#include "virgo.h"
+
 namespace Bryan {
 	namespace Utils {
 		inline const float RAND_FACTOR = 2.0f / RAND_MAX;
@@ -11,7 +13,7 @@ namespace Bryan {
 			return (rand() * RAND_FACTOR) - 1;
 		}
 
-		inline const char* MOVE_LIST[] = {
+		inline const std::string MOVE_LIST[] = {
             "a1a2",
             "a1a3",
             "a1a4",
@@ -1871,5 +1873,9 @@ namespace Bryan {
             "h7h8b",
             "h2h1b"
         };
+
+        inline float boardSquareToFloat(const std::pair<virgo::Piece, virgo::Player>& square) {
+            return (float)square.first * ((square.second * 2) - 1);
+        }
 	};
 }

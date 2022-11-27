@@ -41,5 +41,11 @@
     <ClCompile Include="platform_folders.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Bryan.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="virgo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
