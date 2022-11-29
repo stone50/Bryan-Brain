@@ -2,10 +2,10 @@
 
 namespace Bryan {
 	bool Bryan::save() {
-		return brain.save(brainLocation / name);
+		return brain.save(projectDataLocation / name);
 	}
 
 	bool Bryan::load() {
-		return Brain::load(brainLocation / name, brain);
+		return Brain::load(projectDataLocation / name, brain);
 	}
 }

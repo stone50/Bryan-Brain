@@ -3,7 +3,7 @@
 #include <unordered_set>
 
 #include "Brain.h"
-#include "platform_folders.h"
+#include "Position.h"
 
 namespace Bryan {
     class Bryan {
@@ -28,6 +28,10 @@ namespace Bryan {
             brain.resetState();
         }
 
+        inline void setPosition(const std::string& fen) {
+            position.set(fen);
+        }
+
         bool save();
 
         bool load();
@@ -40,18 +44,18 @@ namespace Bryan {
             return brain;
         }
 
-        virgo::Chessboard getBoard() {
-            return board;
+        Position getPosition() {
+            return position;
         }
 
-        std::vector<MoveEval> getMoveEvals() {
+        inline std::vector<MoveEval> getMoveEvals() {
             return moveEvals;
         }
 
     private:
 
-        std::filesystem::path brainLocation = std::filesystem::path(sago::getDataHome()) / "Bryan" / "Bryan's Brain.brain";
-
+        const std::filesystem::path projectDataLocation = Utils::DATA_PATH / "Bryan";
+        
         /*
         inputs =
         8 x 8 = 64 - piece placement data
@@ -72,33 +76,27 @@ namespace Bryan {
         */
         Brain brain = Brain(68, 2000, 1859);
 
-        virgo::Chessboard board;
+        Position position;
 
         std::vector<MoveEval> moveEvals;
 
         inline void setInputs() {
-
             // piece placement data
-            for (unsigned char i = 0; i < 64; i++) {
-                brain.setInput(i, Utils::boardSquareToFloat(board[i]));
-            }
+            //for (unsigned char i = 0; i < 64; i++) {
+            //    brain.setInput(i,);
+            //}
 
             // active color
-            brain.setInput(64, (float)board.get_next_to_move());
-
+            //brain.setInput(64,);
+            
             // castling availability
-            brain.setInput(65, (float)
-                (board.can_castle_king_side<virgo::WHITE>() << 3) +
-                (board.can_castle_queen_side<virgo::WHITE>() << 2) +
-                (board.can_castle_king_side<virgo::BLACK>() << 1) +
-                board.can_castle_queen_side<virgo::BLACK>()
-            );
+            //brain.setInput(65,);
 
             // en passant target square
-            brain.setInput(66, (float)board.get_enpassant());
+            //brain.setInput(66,);
 
             // halfmove clock
-            brain.setInput(67, board.get_fifty_mv_counter());
+            //brain.setInput(67,);
         }
 
         inline void binaryInsertMoveEval(const MoveEval& moveEval, const unsigned short int startingIndex, const unsigned short int endingIndex) {
@@ -125,6 +123,7 @@ namespace Bryan {
         }
 
         inline void generateMoveEvals() {
+            /*
             std::vector<uint16_t> legalMovesList = std::vector<uint16_t>();
             if (board.get_next_to_move() == virgo::WHITE) {
                 virgo::get_legal_moves<virgo::WHITE>(board, legalMovesList);
@@ -148,6 +147,7 @@ namespace Bryan {
                     binaryInsertMoveEval(moveEval, 0, (unsigned short int)moveEvals.size() - 1);
                 }
             }
+            */
         }
     };
 };

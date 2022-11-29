@@ -1,9 +1,5 @@
 #pragma once
 
-#include <filesystem>
-#include <fstream>
-#include <math.h>
-
 #include "Utils.h"
 
 namespace Bryan {

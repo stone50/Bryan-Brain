@@ -21,13 +21,19 @@
     <ClInclude Include="Utils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="platform_folders.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="virgo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Bryan.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Position.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Bitboards.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Types.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Data.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -38,13 +44,13 @@
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="platform_folders.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Bryan.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="virgo.cpp">
+    <ClCompile Include="Position.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Types.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

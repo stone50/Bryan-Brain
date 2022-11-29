@@ -1,3 +1,5 @@
+#include <fstream>
+
 #include "Brain.h"
 
 namespace Bryan {
