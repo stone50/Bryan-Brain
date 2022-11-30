@@ -111,6 +111,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ShowProgress>LinkVerbose</ShowProgress>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -131,20 +132,65 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Bitboards.h" />
-    <ClInclude Include="Brain.h" />
-    <ClInclude Include="Bryan.h" />
-    <ClInclude Include="Data.h" />
-    <ClInclude Include="Position.h" />
-    <ClInclude Include="Types.h" />
-    <ClInclude Include="Utils.h" />
+    <ClInclude Include="brain.h" />
+    <ClInclude Include="bryan.h" />
+    <ClInclude Include="Stockfish\bitboard.h" />
+    <ClInclude Include="Stockfish\endgame.h" />
+    <ClInclude Include="Stockfish\evaluate.h" />
+    <ClInclude Include="Stockfish\incbin\incbin.h" />
+    <ClInclude Include="Stockfish\material.h" />
+    <ClInclude Include="Stockfish\misc.h" />
+    <ClInclude Include="Stockfish\movegen.h" />
+    <ClInclude Include="Stockfish\movepick.h" />
+    <ClInclude Include="Stockfish\nnue\evaluate_nnue.h" />
+    <ClInclude Include="Stockfish\nnue\features\half_ka_v2_hm.h" />
+    <ClInclude Include="Stockfish\nnue\layers\affine_transform.h" />
+    <ClInclude Include="Stockfish\nnue\layers\clipped_relu.h" />
+    <ClInclude Include="Stockfish\nnue\nnue_accumulator.h" />
+    <ClInclude Include="Stockfish\nnue\nnue_architecture.h" />
+    <ClInclude Include="Stockfish\nnue\nnue_common.h" />
+    <ClInclude Include="Stockfish\nnue\nnue_feature_transformer.h" />
+    <ClInclude Include="Stockfish\pawns.h" />
+    <ClInclude Include="Stockfish\position.h" />
+    <ClInclude Include="Stockfish\psqt.h" />
+    <ClInclude Include="Stockfish\search.h" />
+    <ClInclude Include="Stockfish\simd.h" />
+    <ClInclude Include="Stockfish\syzygy\tbprobe.h" />
+    <ClInclude Include="Stockfish\thread.h" />
+    <ClInclude Include="Stockfish\thread_win32_osx.h" />
+    <ClInclude Include="Stockfish\timeman.h" />
+    <ClInclude Include="Stockfish\tt.h" />
+    <ClInclude Include="Stockfish\tune.h" />
+    <ClInclude Include="Stockfish\types.h" />
+    <ClInclude Include="Stockfish\uci.h" />
+    <ClInclude Include="utils.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Brain.cpp" />
-    <ClCompile Include="Bryan.cpp" />
-    <ClCompile Include="Main.cpp" />
-    <ClCompile Include="Position.cpp" />
-    <ClCompile Include="Types.cpp" />
+    <ClCompile Include="brain.cpp" />
+    <ClCompile Include="bryan.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Stockfish\benchmark.cpp" />
+    <ClCompile Include="Stockfish\bitbase.cpp" />
+    <ClCompile Include="Stockfish\bitboard.cpp" />
+    <ClCompile Include="Stockfish\endgame.cpp" />
+    <ClCompile Include="Stockfish\evaluate.cpp" />
+    <ClCompile Include="Stockfish\material.cpp" />
+    <ClCompile Include="Stockfish\misc.cpp" />
+    <ClCompile Include="Stockfish\movegen.cpp" />
+    <ClCompile Include="Stockfish\movepick.cpp" />
+    <ClCompile Include="Stockfish\nnue\evaluate_nnue.cpp" />
+    <ClCompile Include="Stockfish\nnue\features\half_ka_v2_hm.cpp" />
+    <ClCompile Include="Stockfish\pawns.cpp" />
+    <ClCompile Include="Stockfish\position.cpp" />
+    <ClCompile Include="Stockfish\psqt.cpp" />
+    <ClCompile Include="Stockfish\search.cpp" />
+    <ClCompile Include="Stockfish\syzygy\tbprobe.cpp" />
+    <ClCompile Include="Stockfish\thread.cpp" />
+    <ClCompile Include="Stockfish\timeman.cpp" />
+    <ClCompile Include="Stockfish\tt.cpp" />
+    <ClCompile Include="Stockfish\tune.cpp" />
+    <ClCompile Include="Stockfish\uci.cpp" />
+    <ClCompile Include="Stockfish\ucioption.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

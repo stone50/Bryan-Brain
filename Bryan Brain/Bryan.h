@@ -3,7 +3,6 @@
 #include <unordered_set>
 
 #include "Brain.h"
-#include "Position.h"
 
 namespace Bryan {
     class Bryan {
@@ -28,9 +27,9 @@ namespace Bryan {
             brain.resetState();
         }
 
-        inline void setPosition(const std::string& fen) {
-            position.set(fen);
-        }
+        //inline void setPosition(const std::string& fen) {
+        //    position.set(fen);
+        //}
 
         bool save();
 
@@ -44,9 +43,9 @@ namespace Bryan {
             return brain;
         }
 
-        Position getPosition() {
-            return position;
-        }
+        //Position getPosition() {
+        //    return position;
+        //}
 
         inline std::vector<MoveEval> getMoveEvals() {
             return moveEvals;
@@ -76,7 +75,7 @@ namespace Bryan {
         */
         Brain brain = Brain(68, 2000, 1859);
 
-        Position position;
+        //Position position;
 
         std::vector<MoveEval> moveEvals;
 
