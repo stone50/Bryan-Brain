@@ -18,6 +18,8 @@
 
 #include <iostream>
 
+#include <chrono>
+
 #include "Stockfish/bitboard.h"
 #include "Stockfish/endgame.h"
 #include "Stockfish/position.h"
@@ -27,27 +29,55 @@
 #include "Stockfish/thread.h"
 #include "Stockfish/tt.h"
 #include "Stockfish/uci.h"
+#include "bryan.h"
 
 using namespace Stockfish;
 
+void printMove(const Move& move) {
+	std::cout << UCI::square(from_sq(move)) << UCI::square(to_sq(move)) << type_of(move) << promotion_type(move) << '\n';
+}
+
+void initStockfish(int argc, char* argv[]) {
+	std::cout << engine_info() << std::endl;
+	//CommandLine::init(argc, argv);
+	UCI::init(Options);
+	//Tune::init();
+	//PSQT::init();
+	Bitboards::init();
+	//Position::init();
+	//Bitbases::init();
+	//Endgames::init();
+	//Threads.set(size_t(Options["Threads"]));
+	Threads.set(1);
+	//Search::clear(); // After threads are up
+	//Eval::NNUE::init();
+
+	//UCI::loop(argc, argv);
+}
+
 int main(int argc, char* argv[]) {
+  initStockfish(argc, argv);
 
-  std::cout << engine_info() << std::endl;
+  Bryan::Bryan bryan;
+  bryan.setPosition("rnbqkb1r/ppp2ppp/5n2/3pp3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 4");
 
-  CommandLine::init(argc, argv);
-  UCI::init(Options);
-  Tune::init();
-  PSQT::init();
-  Bitboards::init();
-  Position::init();
-  Bitbases::init();
-  Endgames::init();
-  Threads.set(size_t(Options["Threads"]));
-  Search::clear(); // After threads are up
-  Eval::NNUE::init();
+  const unsigned int ANALYZE_COUNT = 10;
 
-  UCI::loop(argc, argv);
+  std::chrono::time_point<std::chrono::system_clock> start, end;
+  start = std::chrono::system_clock::now();
+
+  for (int i = 0; i < ANALYZE_COUNT; i++) {
+	  bryan.analyze();
+  }
+
+  end = std::chrono::system_clock::now();
+
+  std::chrono::duration<double> elapsed_seconds = end - start;
+  std::cout << "elapsed time: " << elapsed_seconds.count() << "s\n";
+  std::cout << "average time per analysis: " << elapsed_seconds.count() / ANALYZE_COUNT << "s/a\n";
+  std::cout << bryan.getMoveEvals().size() << "\n";
 
   Threads.set(0);
+
   return 0;
 }

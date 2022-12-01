@@ -235,7 +235,9 @@ public:
         }
 #else
         // Note FILE_FLAG_RANDOM_ACCESS is only a hint to Windows and as such may get ignored.
-        HANDLE fd = CreateFile(fname.c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr,
+        wchar_t* wString = new wchar_t[4096];
+        MultiByteToWideChar(CP_ACP, 0, fname.c_str(), -1, wString, 4096);
+        HANDLE fd = CreateFile(wString, GENERIC_READ, FILE_SHARE_READ, nullptr,
                                OPEN_EXISTING, FILE_FLAG_RANDOM_ACCESS, nullptr);
 
         if (fd == INVALID_HANDLE_VALUE)

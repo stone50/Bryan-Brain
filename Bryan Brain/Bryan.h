@@ -2,6 +2,8 @@
 
 #include <unordered_set>
 
+#include "Stockfish/position.h"
+#include "Stockfish/movegen.h"
 #include "Brain.h"
 
 namespace Bryan {
@@ -9,7 +11,7 @@ namespace Bryan {
     public:
 
         struct MoveEval {
-            std::string move;
+            Stockfish::Move move;
             float eval;
         };
 
@@ -27,9 +29,10 @@ namespace Bryan {
             brain.resetState();
         }
 
-        //inline void setPosition(const std::string& fen) {
-        //    position.set(fen);
-        //}
+        inline void setPosition(const std::string& fen) {
+            Stockfish::StateInfo stateInfo{};
+            position.set(fen, false, &stateInfo, position.this_thread());
+        }
 
         bool save();
 
@@ -43,9 +46,9 @@ namespace Bryan {
             return brain;
         }
 
-        //Position getPosition() {
-        //    return position;
-        //}
+        const Stockfish::Position& getPosition() {
+            return position;
+        }
 
         inline std::vector<MoveEval> getMoveEvals() {
             return moveEvals;
@@ -70,12 +73,12 @@ namespace Bryan {
 
         outputs =
         1 - evaluation
-        1858 - all possible moves (see Utils::MOVE_LIST)
-        = 1859
+        1884 - all possible moves (see Utils::MOVE_LIST)
+        = 1885
         */
-        Brain brain = Brain(68, 2000, 1859);
+        Brain brain = Brain(68, 25, 1885);
 
-        //Position position;
+        Stockfish::Position position;
 
         std::vector<MoveEval> moveEvals;
 
@@ -96,6 +99,22 @@ namespace Bryan {
 
             // halfmove clock
             //brain.setInput(67,);
+        }
+
+        std::unordered_set<Stockfish::Move> getLegalMoves() {
+            Stockfish::ExtMove* beginMoves = new Stockfish::ExtMove[642];
+            Stockfish::ExtMove* endMoves = Stockfish::generate<Stockfish::LEGAL>(position, beginMoves);
+
+            std::unordered_set<Stockfish::Move> legalMoves;
+            Stockfish::ExtMove* currentMove = beginMoves;
+            while (currentMove != endMoves) {
+                legalMoves.insert(*currentMove);
+                currentMove++;
+            }
+
+            delete[] beginMoves;
+
+            return legalMoves;
         }
 
         inline void binaryInsertMoveEval(const MoveEval& moveEval, const unsigned short int startingIndex, const unsigned short int endingIndex) {
@@ -122,31 +141,18 @@ namespace Bryan {
         }
 
         inline void generateMoveEvals() {
-            /*
-            std::vector<uint16_t> legalMovesList = std::vector<uint16_t>();
-            if (board.get_next_to_move() == virgo::WHITE) {
-                virgo::get_legal_moves<virgo::WHITE>(board, legalMovesList);
-            }
-            else {
-                virgo::get_legal_moves<virgo::BLACK>(board, legalMovesList);
-            }
-
-            std::unordered_set<std::string> legalMoves;
-            for (uint16_t& move : legalMovesList) {
-                legalMoves.insert(virgo::string::move_to_string(move));
-            }
+            std::unordered_set<Stockfish::Move> legalMoves = getLegalMoves();
 
             moveEvals = std::vector<MoveEval>();
             for (unsigned short int i = 0; i < 1858; i++) {
-                if (legalMoves.contains(Utils::MOVE_LIST[i])) {
-                    MoveEval moveEval = MoveEval(Utils::MOVE_LIST[i], brain.getOutput(i));
+                if (legalMoves.contains(Utils::MOVES[i])) {
+                    MoveEval moveEval = MoveEval(Utils::MOVES[i], brain.getOutput(i));
                     if (moveEvals.size() == 0) {
                         moveEvals.push_back(moveEval);
                     }
                     binaryInsertMoveEval(moveEval, 0, (unsigned short int)moveEvals.size() - 1);
                 }
             }
-            */
         }
     };
 };

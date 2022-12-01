@@ -249,7 +249,7 @@ namespace Stockfish::Eval::NNUE {
     buffer[0] = (v < 0 ? '-' : v > 0 ? '+' : ' ');
 
     double cp = 1.0 * std::abs(int(v)) / PawnValueEg;
-    sprintf(&buffer[1], "%6.2f", cp);
+    sprintf_s(&buffer[1], 7, "%6.2f", cp);
   }
 
 
