@@ -15,8 +15,12 @@ namespace Bryan {
             float eval;
         };
 
-        std::string name = "Bryan";
+        std::string name;
         
+        Bryan();
+
+        Bryan(const std::string& name, const std::string& fen);
+
         inline void analyze() {
             setInputs();
 
@@ -29,8 +33,12 @@ namespace Bryan {
             brain.resetState();
         }
 
+        inline void randomizeBrain() {
+            srand(time(0));
+            brain.randomize();
+        }
+
         inline void setPosition(const std::string& fen) {
-            Stockfish::StateInfo stateInfo{};
             position.set(fen, false, &stateInfo, position.this_thread());
         }
 
@@ -38,15 +46,15 @@ namespace Bryan {
 
         bool load();
 
-        float getEval() {
+        inline float getEval() {
             return brain.getOutput(1858);
         }
 
-        Brain getBrain() {
+        inline Brain getBrain() {
             return brain;
         }
 
-        const Stockfish::Position& getPosition() {
+        inline const Stockfish::Position& getPosition() {
             return position;
         }
 
@@ -56,16 +64,17 @@ namespace Bryan {
 
     private:
 
+        Stockfish::StateInfo stateInfo;
+
         const std::filesystem::path projectDataLocation = Utils::DATA_PATH / "Bryan";
-        
+
         /*
         inputs =
         8 x 8 = 64 - piece placement data
         1 - active color
         1 - castling availability
         1 - en passant target square
-        1 - halfmove clock
-        = 68
+        = 67
 
         middles =
         ???
@@ -76,7 +85,7 @@ namespace Bryan {
         1884 - all possible moves (see Utils::MOVE_LIST)
         = 1885
         */
-        Brain brain = Brain(68, 25, 1885);
+        Brain brain;
 
         Stockfish::Position position;
 
@@ -84,35 +93,27 @@ namespace Bryan {
 
         inline void setInputs() {
             // piece placement data
-            //for (unsigned char i = 0; i < 64; i++) {
-            //    brain.setInput(i,);
-            //}
-
-            // active color
-            //brain.setInput(64,);
-            
-            // castling availability
-            //brain.setInput(65,);
-
-            // en passant target square
-            //brain.setInput(66,);
-
-            // halfmove clock
-            //brain.setInput(67,);
-        }
-
-        std::unordered_set<Stockfish::Move> getLegalMoves() {
-            Stockfish::ExtMove* beginMoves = new Stockfish::ExtMove[642];
-            Stockfish::ExtMove* endMoves = Stockfish::generate<Stockfish::LEGAL>(position, beginMoves);
-
-            std::unordered_set<Stockfish::Move> legalMoves;
-            Stockfish::ExtMove* currentMove = beginMoves;
-            while (currentMove != endMoves) {
-                legalMoves.insert(*currentMove);
-                currentMove++;
+            for (unsigned char i = 0; i < 64; i++) {
+                brain.setInput(i, static_cast<float>(position.piece_on(Stockfish::Square(i))));
             }
 
-            delete[] beginMoves;
+            // active color
+            brain.setInput(64, static_cast<float>(position.side_to_move()));
+            
+            // castling availability
+            brain.setInput(65, static_cast<float>((position.castling_rights(Stockfish::WHITE) << 4) + position.castling_rights(Stockfish::BLACK)));
+
+            // en passant target square
+            brain.setInput(66, static_cast<float>(position.ep_square()));
+        }
+
+        inline std::unordered_set<Stockfish::Move> getLegalMoves() {
+            Stockfish::MoveList<Stockfish::LEGAL> legalMovesList(position);
+
+            std::unordered_set<Stockfish::Move> legalMoves(legalMovesList.size());
+            for (int i = 0; i < legalMovesList.size(); i++) {
+                legalMoves.insert(*(legalMovesList.begin() + i));
+            }
 
             return legalMoves;
         }
@@ -142,7 +143,6 @@ namespace Bryan {
 
         inline void generateMoveEvals() {
             std::unordered_set<Stockfish::Move> legalMoves = getLegalMoves();
-
             moveEvals = std::vector<MoveEval>();
             for (unsigned short int i = 0; i < 1858; i++) {
                 if (legalMoves.contains(Utils::MOVES[i])) {
@@ -150,7 +150,9 @@ namespace Bryan {
                     if (moveEvals.size() == 0) {
                         moveEvals.push_back(moveEval);
                     }
-                    binaryInsertMoveEval(moveEval, 0, (unsigned short int)moveEvals.size() - 1);
+                    else {
+                        binaryInsertMoveEval(moveEval, 0, (unsigned short int)moveEvals.size() - 1);
+                    }
                 }
             }
         }
